@@ -40,7 +40,8 @@ dependencies {
     compile (
             'com.amazonaws:aws-lambda-java-core:1.1.0',
             'com.amazonaws:aws-lambda-java-events:1.1.0',
-            'commons-lang:commons-lang:2.6'
+            'commons-lang:commons-lang:2.6',
+            'org.springframework:spring-context:4.2.5.RELEASE'
     )
 }
 

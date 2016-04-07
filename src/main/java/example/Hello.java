@@ -1,10 +1,13 @@
 package example;
 
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.StopWatch;
 
 public class Hello {
     private static final Log log = LogFactory.getLog(Hello.class);
@@ -20,13 +23,32 @@ public class Hello {
         try {
             LambdaLogger logger = context.getLogger();
             logger.log(lambdaUsed + "(" + randomString + ")");
-            return lambdaUsed + " (" + randomString +")";
-        }  finally {
-            if(lambdaUsed == 0) {
-                log.info("lambdaHello instance("+ randomString + ") First Use");
-            }
-            log.info("lambdaHello instance(" + randomString +") usage numbers: " + lambdaUsed);
 
+            StopWatch stopWatch = new StopWatch("Hello World");
+
+
+
+
+
+            stopWatch.start("Regions regions = Regions.fromName(us-west-2);");
+            Regions regions = Regions.fromName("us-west-2");
+            stopWatch.stop();
+
+            stopWatch.start("Region.getRegion(regions);");
+            Region.getRegion(regions);
+            stopWatch.stop();
+
+            stopWatch.start("Region.getRegion(Regions.US_WEST_2)");
+            Region.getRegion(Regions.US_WEST_2);
+            stopWatch.stop();
+
+            logger.log(stopWatch.prettyPrint());
+
+            String output = (lambdaUsed == 0)?"ColdStart":"WarmStart";
+            output += " (" + randomString +") took:" + stopWatch.getTotalTimeMillis() + " ms to get region";
+            return output;
+        } finally {
+            log.info("lambdaHello instance(" + randomString +") usage numbers: " + lambdaUsed);
 
             if(lambdaUsed > 3) {
                 log.info("lambdaHello Lambda used 4 times, shutting down");
